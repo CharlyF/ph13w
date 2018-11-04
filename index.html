@@ -11,6 +11,14 @@
           padding: 0px 7px;
       }
     </style>
+    <script>
+      document.onReady(function() {
+        function submitForm(event) {
+          console.log('file upload', event);
+          event.preventDefault();
+        }
+      });
+    </script>
   </head>
   <body class="nomobile">
     <form action="http://bros.ph13w.com/bros/uploadImage" method="post" enctype="multipart/form-data">
