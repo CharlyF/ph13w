@@ -29,7 +29,8 @@ func main() {
         defer f.Close()
         io.Copy(f, file)
 
-        fmt.Fprintf(w, "{'status': 'ok', 'action': 'uploadImage'}");
+        resp := fmt.Sprintf("{'uploaded': '%s'}", handler.Filename)
+        fmt.Fprintf(w, resp)
     })
 
     r.HandleFunc("/createImage", func(w http.ResponseWriter, r *http.Request) {
