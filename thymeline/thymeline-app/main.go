@@ -23,9 +23,10 @@ const (
 )
 
 type response struct {
-	fileName string `json:"filename,omitempty"`
-	url string		`json:"url,omitempty"`
-	timestamp int64	`json:"ts,omitempty"`
+	Url string		`json:"url"`
+	Who string		`json:"who"`
+	FileName string `json:"filename"`
+	Timestamp int64	`json:"ts"`
 }
 
 func main() {
@@ -93,6 +94,7 @@ func listImages(w http.ResponseWriter, r *http.Request) {
 	client := newClient(ctx)
 	imgList := []response{}
 	it := client.cl.Bucket(mainBucket).Objects(ctx, nil)
+	fmt.Printf("Requesting all images \n")
 	for {
 		attrs, err := it.Next()
 		if err == iterator.Done {
@@ -102,11 +104,17 @@ func listImages(w http.ResponseWriter, r *http.Request) {
 			fmt.Fprintf(w, fmt.Sprintf(`{'status': 'error', log: '%s'}`, err.Error()))
 			return
 		}
-		fmt.Fprintln(w, attrs.Name)
+		name := attrs.Name
+		sp := strings.Split(name, "-")
+		if len(sp) != 3 {
+			fmt.Printf("Unexpected len for file %#v", name)
+			continue
+		}
 		img := response{
-			fileName: attrs.Name,
-			url: attrs.MediaLink,
-			timestamp: attrs.Generation,
+			FileName: sp[1],
+			Who: sp[0],
+			Url: fmt.Sprintf("%s.storage.googleapis.com/%s",mainBucket, name),
+			Timestamp: attrs.Generation,
 		}
 		imgList = append(imgList, img)
 	}
@@ -116,5 +124,4 @@ func listImages(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	fmt.Fprintf(w, string(jList))
-	fmt.Fprintf(w, "{'status': 'ok', 'action': 'listImages'}");
 }
