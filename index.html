@@ -1,13 +1,19 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <style>
+      form > label{
+        display: block;
+        width: 70px;
+      }
+    </style>
   </head>
   <body class="nomobile">
     <form action="http://bros.ph13w.com/bros/uploadImage" method="post" enctype="multipart/form-data">
-        <input type="file" name="image" />
-        <label>charly<input type="radio" name="who" value="charly" /> </label>
-        <label>peter<input type="radio" name="who" value="peter" /> </label>
-        <input type="submit" value="Upload image" />
+        <label><input type="file" name="image" /></label>
+        <label><input type="radio" name="who" value="charly" />charly</label>
+        <label><input type="radio" name="who" value="peter" />peter</label>
+        <label><input type="submit" value="Upload image" /></label>
     </form>
   </body>
   <!-- END BODY -->
