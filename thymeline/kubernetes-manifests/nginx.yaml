@@ -47,13 +47,13 @@ data:
 
     http {
       access_log /dev/stdout;
-
       server {
         listen 80;
         location / {
           proxy_pass http://crystal-www-example.default.svc.cluster.local:8080;
         }
         location /bros {
+          client_max_body_size 15M;
           rewrite /bros/(.*) /$1 break;
           proxy_pass http://thymeline-app.dev.svc.cluster.local:8080/;    
           proxy_redirect     off;
