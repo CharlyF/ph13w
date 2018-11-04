@@ -36,7 +36,7 @@ func main() {
 		}
 
 		filenameNoUnderscores := strings.Replace(handler.Filename, "-", "_", -1)
-		objectName := fmt.Sprintf("%s-%s-%s", whoUploaded, filenameNoUnderscores, int32(time.Now().Unix()))
+		objectName := fmt.Sprintf("%s-%s-%d", whoUploaded, filenameNoUnderscores, int32(time.Now().Unix()))
 
 		wc := client.Bucket("ph13w-images").Object(objectName).NewWriter(ctx)
 		resp := fmt.Sprintf("{'uploaded': '%s'}", objectName)
