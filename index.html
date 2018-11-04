@@ -6,13 +6,17 @@
         display: block;
         width: 70px;
       }
+      form {
+          font-size: 16px;
+          padding: 0px 7px;
+      }
     </style>
   </head>
   <body class="nomobile">
     <form action="http://bros.ph13w.com/bros/uploadImage" method="post" enctype="multipart/form-data">
         <label><input type="file" name="image" /></label>
-        <label><input type="radio" name="who" value="charly" />charly</label>
-        <label><input type="radio" name="who" value="peter" />peter</label>
+        <label><input type="radio" name="who" value="charly" /> charly</label>
+        <label><input type="radio" name="who" value="peter" /> peter</label>
         <label><input type="submit" value="Upload image" /></label>
     </form>
   </body>
