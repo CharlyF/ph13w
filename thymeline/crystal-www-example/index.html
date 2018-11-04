@@ -1,24 +1,48 @@
 <!DOCTYPE html>
 <html>
-<head>
-<!-- Global site tag (gtag.js) - Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=UA-128623876-1"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'UA-128623876-1');
-</script>
-<style>
-body {
-    background: black;
-}
-iframe {
-    border: 0;
-}
-</style>
-</head>
-<body>
-<iframe src="http://207.172.166.248:8079" width="1300" height="740"></iframe>
+  <head>
+    <style>
+      form > label{
+        display: block;
+        width: 70px;
+      }
+      form {
+          font-size: 16px;
+          padding: 0px 7px;
+      }
+    </style>
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        function getWho() {
+          who = document.querySelectorAll('input[name="who"]:checked');
+          if (who.length == 1) {
+            return who.value;
+          }
+          return null;
+        }
+        function showError(err) {
+          document.getElementById('error').textContent = err;
+        }
+        function onSubmitForm(event) {
+          console.log('file upload', event);
+          who = getWho();
+          if (who === null) {
+            showError("you didn't select who, idiot");
+            return false;
+          }
+          event.preventDefault();
+        }
+        document.getElementById('uploadForm').addEventListener('submit', onSubmitForm);
+      });
+    </script>
+  </head>
+  <body class="nomobile">
+    <form id="uploadForm" action="http://bros.ph13w.com/bros/uploadImage" method="post" enctype="multipart/form-data">
+        <label><input type="file" name="image" /></label>
+        <label><input type="radio" name="who" value="charly" /> charly</label>
+        <label><input type="radio" name="who" value="peter" /> peter</label>
+        <label><input id="uploadImage" type="submit" value="Upload image" /></label>
+    </form>
+  </body>
+  <!-- END BODY -->
 </html>
