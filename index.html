@@ -13,8 +13,23 @@
     </style>
     <script>
       document.addEventListener('DOMContentLoaded', function() {
+        function getWho() {
+          who = document.querySelectorAll('input[name="who"]:checked');
+          if (who.length == 1) {
+            return who.value;
+          }
+          return null;
+        }
+        function showError(err) {
+          document.getElementById('error').textContent = err;
+        }
         function onSubmitForm(event) {
           console.log('file upload', event);
+          who = getWho();
+          if (who === null) {
+            showError('you didn't select who, idiot');
+            return false;
+          }
           event.preventDefault();
         }
         document.getElementById('uploadForm').addEventListener('submit', onSubmitForm);
