@@ -1,16 +1,30 @@
 package main
 
-
 import (
 	"cloud.google.com/go/storage"
 	"context"
+	"encoding/json"
 	"fmt"
+	"google.golang.org/api/iterator"
 	"io"
 	"log"
 	"net/http"
 
 	"github.com/gorilla/mux"
 )
+
+type imgClient struct {
+	cl *storage.Client
+}
+const (
+	mainBucket = "ph13w-images"
+)
+
+type response struct {
+	fileName string `json:"filename,omitempty"`
+	url string		`json:"url,omitempty"`
+	timestamp int64	`json:"ts,omitempty"`
+}
 
 func main() {
 
@@ -53,11 +67,48 @@ func main() {
         fmt.Fprintf(w, "{'status': 'ok', 'action': 'createImage'}");
     })
 
-    r.HandleFunc("/listImages", func(w http.ResponseWriter, r *http.Request) {
-        //vars := mux.Vars(r)
-
-        fmt.Fprintf(w, "{'status': 'ok', 'action': 'listImages'}");
-    })
+    r.HandleFunc("/listImages", listImages)
 
     http.ListenAndServe(":8080", r)
+}
+
+func newClient(ctx context.Context) *imgClient {
+	client, err := storage.NewClient(ctx)
+	if err != nil {
+		log.Fatalf("Failed to create client: %v", err)
+	}
+	return &imgClient{
+		client,
+	}
+}
+
+func listImages(w http.ResponseWriter, r *http.Request) {
+	ctx := context.Background()
+	client := newClient(ctx)
+	imgList := []response{}
+	it := client.cl.Bucket(mainBucket).Objects(ctx, nil)
+	for {
+		attrs, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			fmt.Fprintf(w, fmt.Sprintf(`{'status': 'error', log: '%s'}`, err.Error()))
+			return
+		}
+		fmt.Fprintln(w, attrs.Name)
+		img := response{
+			fileName: attrs.Name,
+			url: attrs.MediaLink,
+			timestamp: attrs.Generation,
+		}
+		imgList = append(imgList, img)
+	}
+	jList, err := json.Marshal(imgList)
+	if err != nil {
+		fmt.Fprintf(w, fmt.Sprintf(`{'status': 'error', log: '%s'}`, err.Error()))
+		return
+	}
+	fmt.Fprintf(w, string(jList))
+	fmt.Fprintf(w, "{'status': 'ok', 'action': 'listImages'}");
 }
