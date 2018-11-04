@@ -8,6 +8,8 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"strings"
+	"time"
 
 	"github.com/gorilla/mux"
 )
@@ -17,6 +19,7 @@ func main() {
 	r := mux.NewRouter()
     r.HandleFunc("/uploadImage", func(w http.ResponseWriter, r *http.Request) {
         r.ParseMultipartForm(640000000)
+        whoUploaded := r.FormValue("who");
         file, handler, err := r.FormFile("image")
         if err != nil {
             fmt.Println(err)
@@ -32,8 +35,11 @@ func main() {
 			log.Fatalf("Failed to create client: %v", err)
 		}
 
-		wc := client.Bucket("ph13w-images").Object(handler.Filename).NewWriter(ctx)
-		resp := fmt.Sprintf("{'uploaded': '%s'}", handler.Filename)
+		filenameNoUnderscores := strings.Replace(handler.Filename, "-", "_", -1)
+		objectName := fmt.Sprintf("%s-%s-%s", whoUploaded, filenameNoUnderscores, int32(time.Now().Unix()))
+
+		wc := client.Bucket("ph13w-images").Object(objectName).NewWriter(ctx)
+		resp := fmt.Sprintf("{'uploaded': '%s'}", objectName)
 		if _, err = io.Copy(wc, file); err != nil {
 			fmt.Println(err)
 			resp = fmt.Sprintf("{'error': '%s'}", err)
