@@ -13,19 +13,20 @@
     </style>
     <script>
       document.onReady(function() {
-        function submitForm(event) {
+        function onSubmitForm(event) {
           console.log('file upload', event);
           event.preventDefault();
         }
+        document.getElementById('uploadForm').addEventListener('submit', onSubmitForm);
       });
     </script>
   </head>
   <body class="nomobile">
-    <form action="http://bros.ph13w.com/bros/uploadImage" method="post" enctype="multipart/form-data">
+    <form id="uploadForm" action="http://bros.ph13w.com/bros/uploadImage" method="post" enctype="multipart/form-data">
         <label><input type="file" name="image" /></label>
         <label><input type="radio" name="who" value="charly" /> charly</label>
         <label><input type="radio" name="who" value="peter" /> peter</label>
-        <label><input type="submit" value="Upload image" /></label>
+        <label><input id="uploadImage" type="submit" value="Upload image" /></label>
     </form>
   </body>
   <!-- END BODY -->
