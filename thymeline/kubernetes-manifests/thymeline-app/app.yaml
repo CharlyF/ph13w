@@ -1,0 +1,38 @@
+# kubernetes-config/thymeline-app.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: thymeline-app
+  namespace: dev
+  labels:
+    app: thymeline-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: thymeline-app
+  template:
+    metadata:
+      labels:
+        app: thymeline-app
+    spec:
+      containers:
+      - name: thymeline-app
+        image: gcr.io/ph13w-220715/thymeline-app:latest
+        ports:
+        - containerPort: 8080
+
+---
+
+kind: Service
+apiVersion: v1
+metadata:
+  name: thymeline-app
+  namespace: dev
+spec:
+  selector:
+    app: thymeline-app
+  ports:
+  - protocol: TCP
+    port: 8080
+    targetPort: 8080
