@@ -3,15 +3,17 @@ package main
 
 import (
 "fmt"
-"net/http"
+	"io"
+	"net/http"
+	"os"
 
-"github.com/gorilla/mux"
+	"github.com/gorilla/mux"
 )
 
 func main() {
     r := mux.NewRouter()
     r.HandleFunc("/uploadImage", func(w http.ResponseWriter, r *http.Request) {
-        r.ParseMultipartForm(32 << 20)
+        r.ParseMultipartForm(640000000)
         file, handler, err := r.FormFile("image")
         if err != nil {
             fmt.Println(err)
@@ -42,8 +44,5 @@ func main() {
         fmt.Fprintf(w, "{'status': 'ok', 'action': 'listImages'}");
     })
 
-    err := http.ListenAndServe(":8080", r)
-    if err != nil {
-        fmt.Errorf(err.Error());
-    }
+    http.ListenAndServe(":8080", r)
 }
