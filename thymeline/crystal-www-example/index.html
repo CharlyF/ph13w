@@ -13,6 +13,30 @@
     </style>
     <script>
       document.addEventListener('DOMContentLoaded', function() {
+        function renderImages(stringified) {
+			theDiv = document.getElementById('images');
+			theJson = JSON.parse(stringified);
+			theJson.forEach(function(item) {
+				newImage = document.createElement('img');
+				newImage.setAttribute('src', 'http://' + item['url']);
+				newImage.setAttribute('width', 500);
+				newImage.setAttribute('height', 500);
+				theDiv.appendChild(newImage);
+			});
+		} 
+        function listImages() {
+                // Create a request variable and assign a new XMLHttpRequest object to it.
+                var request = new XMLHttpRequest();
+
+                // Open a new connection, using the GET request on the URL endpoint
+                request.open('GET', 'http://bros.ph13w.com/bros/listImages', true);
+
+                request.onload = function (evt) {
+                    renderImages(request.response);
+                }
+                request.send();
+        }
+
         function getWho() {
           who = document.querySelectorAll('input[name="who"]:checked');
           if (who.length == 1) {
@@ -23,6 +47,7 @@
         function showError(err) {
           document.getElementById('error').textContent = err;
         }
+        /*
         function onSubmitForm(event) {
           console.log('file upload', event);
           who = getWho();
@@ -33,6 +58,8 @@
           event.preventDefault();
         }
         document.getElementById('uploadForm').addEventListener('submit', onSubmitForm);
+        */
+        listImages();
       });
     </script>
   </head>
