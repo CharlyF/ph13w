@@ -2,16 +2,19 @@ package main
 
 
 import (
-"fmt"
+	"cloud.google.com/go/storage"
+	"context"
+	"fmt"
 	"io"
+	"log"
 	"net/http"
-	"os"
 
 	"github.com/gorilla/mux"
 )
 
 func main() {
-    r := mux.NewRouter()
+
+	r := mux.NewRouter()
     r.HandleFunc("/uploadImage", func(w http.ResponseWriter, r *http.Request) {
         r.ParseMultipartForm(640000000)
         file, handler, err := r.FormFile("image")
@@ -19,17 +22,28 @@ func main() {
             fmt.Println(err)
             return
         }
+
         defer file.Close()
         fmt.Fprintf(w, "%v", handler.Header)
-        f, err := os.OpenFile("./"+handler.Filename, os.O_WRONLY|os.O_CREATE, 0666)
-        if err != nil {
-            fmt.Println(err)
-            return
-        }
-        defer f.Close()
-        io.Copy(f, file)
 
-        resp := fmt.Sprintf("{'uploaded': '%s'}", handler.Filename)
+		ctx := context.Background()
+		client, err := storage.NewClient(ctx)
+		if err != nil {
+			log.Fatalf("Failed to create client: %v", err)
+		}
+
+		wc := client.Bucket("ph13w-images").Object(handler.Filename).NewWriter(ctx)
+		resp := fmt.Sprintf("{'uploaded': '%s'}", handler.Filename)
+		if _, err = io.Copy(wc, file); err != nil {
+			fmt.Println(err)
+			resp = fmt.Sprintf("{'error': '%s'}", err)
+		}
+
+		if err := wc.Close(); err != nil {
+			fmt.Println(err)
+			resp = fmt.Sprintf("{'error': '%s'}", err)
+		}
+
         fmt.Fprintf(w, resp)
     })
 
