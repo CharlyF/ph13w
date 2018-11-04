@@ -21,7 +21,16 @@ spec:
         image: gcr.io/ph13w-220715/thymeline-app:latest
         ports:
         - containerPort: 8080
-
+        env:
+        - name: GOOGLE_APPLICATION_CREDENTIALS
+          value: "/home/user/ph13w-secrets/ph13w-220715-b7ce774727fc.json"
+        volumeMounts:
+          - name: secret-volume
+            mountPath: /home/user/ph13w-secrets
+      volumes:
+      - name: secret-volume
+        secret:
+          secretName: google-storage
 ---
 
 kind: Service
